@@ -1,0 +1,34 @@
+[
+  {
+    "key": "starwars",
+    "name": "Star Wars",
+    "games": [
+      {
+        "key": "planets",
+        "name": "Star Wars Planets",
+        "credits": "Data supplied by https://swapi.dev"
+      },
+      {
+        "key": "starships",
+        "name": "Star Wars Starships",
+        "credits": "Data supplied by https://swapi.dev"
+      },
+      {
+        "key": "vehicles",
+        "name": "Star Wars Vehicles",
+        "credits": "Data supplied by https://swapi.dev"
+      }
+    ]
+  },
+  {
+    "key": "lego",
+    "name": "Lego",
+    "games": [
+      {
+        "key": "sets",
+        "name": "Lego sets",
+        "credits": "Data supplied by https://rebrickable.com"
+      }
+    ]
+  }
+]
