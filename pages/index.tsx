@@ -1,5 +1,6 @@
-import Head from 'next/head'
 import { promises as fs } from 'fs'
+import Head from 'next/head'
+import Link from 'next/link'
 import path from 'path'
 
 export default function Home({ games }) {
@@ -28,7 +29,9 @@ export default function Home({ games }) {
                                         <div className="bg-yellow-300 shadow-xl rounded-lg py-3">
                                             <div className="p-2">
                                                 <h4 className="text-center text-xl text-gray-900 font-medium leading-8">
-                                                    <a href={`${theme.key}/${game.key}/`}>{ game.name }</a>
+                                                    <Link
+                                                        href={`/${encodeURIComponent(theme.key)}/${encodeURIComponent(game.key)}/`}
+                                                    >{ game.name }</Link>
                                                 </h4>
                                             </div>
                                         </div>
