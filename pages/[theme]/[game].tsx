@@ -4,6 +4,7 @@ import Transformers from "../../types/transformers/";
 import {promises as fs} from "fs";
 import path from "path";
 import Head from "next/head";
+import Image from "next/image";
 
 export default function Game({ gameName, cards, credits }) {
     const router = useRouter()
@@ -23,12 +24,23 @@ export default function Game({ gameName, cards, credits }) {
                 <h1 className="text-center text-3xl m-10">{gameName}</h1>
 
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-                    {cards.map((card) => (
-                    <div className="max-w-xs m-4" key={card.name}>
+                    {cards.map((card, cardNumber) => (
+                    <div className="max-w-xs m-4" key={`${card.name}-${cardNumber}`}>
                         <div className="bg-white shadow-xl rounded-lg py-3">
                             <h2 className="text-center text-xl text-gray-900 font-medium leading-8">
                                 {card.name}
                             </h2>
+                            {card.imageUrl &&
+                            <div className="photo-wrapper p-2">
+                                <Image
+                                  src={card.imageUrl}
+                                  alt="`Picture of ${card.name}`"
+                                  width={48}
+                                  height={48}
+                                  priority
+                                />
+                            </div>
+                            }
                             <div className="p-2">
                                 <table className="text-xs my-3">
                                     <tbody>
@@ -72,6 +84,8 @@ export async function getStaticProps({ params }) {
     resources.map((resource) => {
         cards.push(transformer.forCard(resource));
     })
+
+    console.log(cards)
 
     return {
         props: {

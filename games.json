@@ -33,8 +33,8 @@
       {
         "key": "sets",
         "name": "Lego sets",
-        "fetcher": "StarWarsPlanetsFetcher",
-        "transformer": "StarWarsPlanetResourceTransformer",
+        "fetcher": "LegoSetsFetcher",
+        "transformer": "LegoSetResourceTransformer",
         "credits": "Data supplied by https://rebrickable.com"
       }
     ]
