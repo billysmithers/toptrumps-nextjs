@@ -13,15 +13,15 @@
       {
         "key": "starships",
         "name": "Star Wars Starships",
-        "fetcher": "StarWarsPlanetsFetcher",
-        "transformer": "StarWarsPlanetResourceTransformer",
+        "fetcher": "StarWarsStarshipsFetcher",
+        "transformer": "StarWarsTransportResourceTransformer",
         "credits": "Data supplied by https://swapi.dev"
       },
       {
         "key": "vehicles",
         "name": "Star Wars Vehicles",
-        "fetcher": "StarWarsPlanetsFetcher",
-        "transformer": "StarWarsPlanetResourceTransformer",
+        "fetcher": "StarWarsVehiclesFetcher",
+        "transformer": "StarWarsTransportResourceTransformer",
         "credits": "Data supplied by https://swapi.dev"
       }
     ]

@@ -4,7 +4,6 @@ import Transformers from "../../types/transformers/";
 import {promises as fs} from "fs";
 import path from "path";
 import Head from "next/head";
-import Link from "next/link";
 
 export default function Game({ gameName, cards, credits }) {
     const router = useRouter()

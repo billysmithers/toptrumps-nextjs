@@ -24,7 +24,7 @@ export class PlanetResourceTransformer implements ResourceTransformer
         "edited": "2014-12-20T20:58:18.423000Z",
         "url": "http://swapi.dev/api/planets/4/"
         }
-   * @param resource: Array<PlanetData>
+   * @param resource: PlanetData
    * @return Card
    */
   public forCard(resource: PlanetData): CardJson
@@ -37,7 +37,7 @@ export class PlanetResourceTransformer implements ResourceTransformer
       }
 
       if (typeof value === "string" && ! isNaN(parseFloat(value))) {
-        capabilities.push({ key: key.replace('_', ' '), value});
+        capabilities.push({ key: key.replace(new RegExp('_', 'g'), ' '), value});
       }
     }
 
