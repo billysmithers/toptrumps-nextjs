@@ -37,10 +37,10 @@ export class PlanetResourceTransformer implements ResourceTransformer
       }
 
       if (typeof value === "string" && ! isNaN(parseFloat(value))) {
-        capabilities.push({ key: key.replace('_', ' '), value: parseFloat(value)});
+        capabilities.push({ key: key.replace('_', ' '), value});
       }
     }
 
-    return new Card(resource.name, capabilities).toObject();
+    return new Card(resource.name, capabilities, null).toObject();
   }
 }

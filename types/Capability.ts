@@ -1,14 +1,10 @@
 export class Capability
 {
   capability: string
-  value: string
+  value: number
 
-  constructor(capability: string, value: string)
+  constructor(capability: string, value: number)
   {
-    if (isNaN(parseFloat(value))) {
-      throw 'A capability value must be numeric.';
-    }
-
     this.capability = capability;
     this.value = value;
   }
@@ -24,5 +20,5 @@ export class Capability
 
 export type CapabilityJson = {
   capability: string
-  value: string
+  value: number
 }

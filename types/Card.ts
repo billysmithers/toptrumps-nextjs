@@ -12,7 +12,7 @@ export class Card
     this.capabilities = [];
 
     capabilitiesData.map((capability) => {
-      this.capabilities.push(new Capability(capability.key, capability.value));
+      this.capabilities.push(new Capability(capability.key, parseFloat(capability.value)));
     })
 
     this.capabilities.sort(Card.compareCapabilities);
@@ -26,7 +26,8 @@ export class Card
 
     return {
       name: this.name,
-      capabilities
+      capabilities,
+      imageUrl: this.imageUrl,
     }
   }
 
@@ -46,4 +47,5 @@ export class Card
 export type CardJson = {
   name: string
   capabilities: Array<CapabilityJson>
+  imageUrl?: string
 }
