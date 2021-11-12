@@ -1,4 +1,5 @@
 import {Fetcher} from "../Fetcher"
+import {logTypes} from "../logTypes";
 
 export abstract class ResourceFetcher implements Fetcher
 {
@@ -13,12 +14,16 @@ export abstract class ResourceFetcher implements Fetcher
     let resources = []
     let page = await this.fetchPage(endpoint)
 
-    if ((page.results ?? []).length === 0) {
+    if (! page) {
+      return null;
+    }
+
+    if (page.results?.length === 0) {
       return []
     }
 
     do {
-      page.results.map((result) => {
+      page.results?.map((result) => {
         resources.push(result)
       })
 
@@ -27,7 +32,7 @@ export abstract class ResourceFetcher implements Fetcher
       } else {
         page.results = []
       }
-    } while ((page.results ?? []).length > 0)
+    } while (page.results?.length > 0)
 
     return resources.slice(0, this.numberOfResourcesToFetch)
   }
@@ -45,28 +50,17 @@ export abstract class ResourceFetcher implements Fetcher
 
       return response.json()
     } catch (e) {
-      /*Log::error(
-        "Failed to fetch Star Wars {{$type}} due to issues with the JSON response.",
-        [
-          'logType'       => LogTypes::STAR_WARS,
-        'responseBody'  => ! empty($response) ? (new Message)->toString($response) : null,
-        'exception'     => $this->formatExceptionForLogging($e),
-        ]
-      );*/
+      console.error(
+        `Failed to fetch Star Wars ${type} due to issues with the JSON response.`,
+        {
+          'logType': logTypes.STAR_WARS,
+          'responseBody': e.response,
+          'exception': e.message,
+        }
+      );
 
       return null
     }
-    /*catch (e) {
-      Log::error(
-        "Failed to fetch Star Wars {{$type}} due to issues with the API call.",
-        [
-          'logType'       => LogTypes::STAR_WARS,
-        'exception'     => $this->formatExceptionForLogging($e),
-        ]
-    );
-
-      return [];
-    }*/
   }
 }
 

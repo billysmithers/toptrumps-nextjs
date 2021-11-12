@@ -2,7 +2,7 @@ import {ResourceFetcher} from "./ResourceFetcher";
 
 export class PlanetsFetcher extends ResourceFetcher
 {
-  public fetch(): Promise<Array<PlanetData>>
+  public async fetch(): Promise<PlanetData[]>
   {
     return this.fetchByResourceType("Planets");
   }
@@ -18,8 +18,8 @@ export type PlanetData = {
   terrain: string,
   surface_water: string,
   population: string,
-  residents: Array<string>,
-  films: Array<string>,
+  residents: string[],
+  films: string[],
   created: string,
   edited: string,
   url: string,
