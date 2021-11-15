@@ -33,6 +33,10 @@ export class SetResourceTransformer implements ResourceTransformer
       }
     }
 
+    if (! resource.set_img_url) {
+      resource.set_img_url = 'https://cdn.rebrickable.com/media/thumbs/mocs/moc-50293.jpg/300x200.jpg';
+    }
+
     return new Card(resource.name, capabilities, resource.set_img_url).toObject();
   }
 }

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import Fetchers from "../../types/api/";
 import Transformers from "../../types/transformers/";
 import {promises as fs} from "fs";
@@ -7,9 +6,6 @@ import Head from "next/head";
 import Image from "next/image";
 
 export default function Game({ gameName, cards, credits }) {
-    const router = useRouter()
-    const { theme, game } = router.query
-
     return <div>
         <Head>
             <meta charSet="utf-8"></meta>
@@ -31,13 +27,12 @@ export default function Game({ gameName, cards, credits }) {
                                 {card.name}
                             </h2>
                             {card.imageUrl &&
-                            <div className="photo-wrapper p-2">
+                            <div className="relative" style={{ width: '300px', height: '300px', margin: 'auto' }}>
                                 <Image
                                   src={card.imageUrl}
-                                  alt="`Picture of ${card.name}`"
-                                  width={48}
-                                  height={48}
-                                  priority
+                                  alt={`Picture of ${card.name}`}
+                                  layout="fill"
+                                  objectFit="contain"
                                 />
                             </div>
                             }
@@ -84,8 +79,6 @@ export async function getStaticProps({ params }) {
     resources.map((resource) => {
         cards.push(transformer.forCard(resource));
     })
-
-    console.log(cards)
 
     return {
         props: {
