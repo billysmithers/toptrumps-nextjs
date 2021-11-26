@@ -38,5 +38,18 @@
         "credits": "Data supplied by https://rebrickable.com"
       }
     ]
+  },
+  {
+    "key": "pokemon",
+    "name": "Pokemon",
+    "games": [
+      {
+        "key": "characters",
+        "name": "Pokemon characters",
+        "fetcher": "PokemonCharactersFetcher",
+        "transformer": "PokemonCharacterResourceTransformer",
+        "credits": "Data supplied by https://pokeapi.co"
+      }
+    ]
   }
 ]
