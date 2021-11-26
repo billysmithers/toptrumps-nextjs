@@ -71,7 +71,6 @@ export async function getStaticProps({ params }) {
     const config = games.find((theme) => { return theme.key === params.theme }).games
       .find((game) => { return game.key === params.game });
 
-    // @TODO - use cached results if possible
     const fetcher = new Fetchers[config.fetcher]();
     const transformer = new Transformers[config.transformer]();
     const resources = await fetcher.fetch();
