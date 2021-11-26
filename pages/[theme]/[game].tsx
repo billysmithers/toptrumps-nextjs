@@ -3,7 +3,7 @@ import Transformers from "../../types/transformers/";
 import {promises as fs} from "fs";
 import path from "path";
 import Head from "next/head";
-import Image from "next/image";
+import {CardBack} from "../../components/CardBack";
 
 export default function Game({ gameName, cards, credits }) {
     return <div>
@@ -20,44 +20,17 @@ export default function Game({ gameName, cards, credits }) {
                 <h1 className="text-center text-3xl m-10">{gameName}</h1>
 
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-                    {cards.map((card, cardNumber) => (
-                    <div className="max-w-xs m-4" key={`${card.name}-${cardNumber}`}>
-                        <div className="bg-white shadow-xl rounded-lg py-3">
-                            <h2 className="text-center text-xl text-gray-900 font-medium leading-8">
-                                {card.name}
-                            </h2>
-                            {card.imageUrl &&
-                            <div className="relative" style={{ width: '300px', height: '300px', margin: 'auto' }}>
-                                <Image
-                                  src={card.imageUrl}
-                                  alt={`Picture of ${card.name}`}
-                                  layout="fill"
-                                  objectFit="contain"
-                                />
-                            </div>
-                            }
-                            <div className="p-2">
-                                <table className="text-xs my-3">
-                                    <tbody>
-                                    {card.capabilities.map((capability, index) => (
-                                    <tr className={ index % 2 === 0 ? ' bg-yellow-300' : 'bg-yellow-100' }
-                                        key={`${capability.capability}-${capability.value}`}
-                                    >
-                                        <td className="px-2 py-2 text-black font-semibold">
-                                            {capability.capability}
-                                        </td>
-                                        <td className="px-2 py-2 text-black">
-                                            {capability.value}
-                                        </td>
-                                    </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div>
+                        <h2 className="text-xl text-gray-900 font-medium leading-8">Player 1 (You)</h2>
+                        <CardBack name={gameName}></CardBack>
                     </div>
-                    ))}
+
+                    <div>
+                        <h2 className="text-xl text-gray-900 font-medium leading-8">Player 2 (Computer)</h2>
+                        <CardBack name={gameName}></CardBack>
+                    </div>
                 </div>
+
                 <footer className="text-center">{credits}</footer>
             </div>
         </main>
