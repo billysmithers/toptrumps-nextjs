@@ -2,15 +2,23 @@ import Fetchers from "../../types/api/";
 import Transformers from "../../types/transformers/";
 import {promises as fs} from "fs";
 import path from "path";
+import dynamic from 'next/dynamic'
 import Head from "next/head";
-import {CardBack} from "../../components/CardBack";
+
+const GameEngine = dynamic(
+    () => import("../../components/GameEngine"),
+    { ssr: false }
+)
 
 export default function Game({ gameName, cards, credits }) {
     return <div>
         <Head>
-            <meta charSet="utf-8"></meta>
-            <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-            <meta name="description" content="Play the classic Top Trumps card game! This card set is based on {gameName}."></meta>
+            <meta charSet="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1"/>
+            <meta
+                name="description"
+                content="Play the classic Top Trumps card game! This card set is based on {gameName}."
+            />
             <title>Top Trumps - {gameName}</title>
         </Head>
 
@@ -18,19 +26,7 @@ export default function Game({ gameName, cards, credits }) {
             <div className="container mx-auto md:px-24 lg:px-52">
                 <a href="/" className="p-4 block">Games</a>
                 <h1 className="text-center text-3xl m-10">{gameName}</h1>
-
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-                    <div>
-                        <h2 className="text-xl text-gray-900 font-medium leading-8">Player 1 (You)</h2>
-                        <CardBack name={gameName}></CardBack>
-                    </div>
-
-                    <div>
-                        <h2 className="text-xl text-gray-900 font-medium leading-8">Player 2 (Computer)</h2>
-                        <CardBack name={gameName}></CardBack>
-                    </div>
-                </div>
-
+                <GameEngine cards={cards}/>
                 <footer className="text-center">{credits}</footer>
             </div>
         </main>

@@ -7,9 +7,12 @@ export default function Home({ games }) {
     return (
         <div>
             <Head>
-                <meta charSet="utf-8"></meta>
-                <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-                <meta name="description" content="Play the classic Top Trumps card game! Choose a game to play from this page."></meta>
+                <meta charSet="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <meta
+                    name="description"
+                    content="Play the classic Top Trumps card game! Choose a game to play from this page."
+                />
                 <title>Top Trumps</title>
             </Head>
 
