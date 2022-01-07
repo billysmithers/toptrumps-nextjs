@@ -16,33 +16,27 @@ export default class Player extends Component<{
     number: number,
     name: string,
     cards: Card[],
-    currentCard: number,
     shouldAutoChoose: boolean,
     isTurn: boolean,
-    hasWon: boolean,
 }> {
     private readonly number
     private readonly name
     private readonly cards
-    private readonly currentCard
     private readonly shouldAutoChoose
     private readonly isTurn
-    private readonly hasWon
 
     constructor(props) {
         super(props)
         this.number = props.number
         this.name = props.name
         this.cards = props.cards
-        this.currentCard = props.currentCard
         this.shouldAutoChoose = props.shouldAutoChoose
         this.isTurn = props.isTurn
-        this.hasWon = props.hasWon
     }
 
     componentDidMount() {
         capabilityEvent.on('capabilityChosen', (chosen: { card: Card, capability: Capability }) => {
-            if (chosen.card.name === this.cards[this.currentCard].name) {
+            if (chosen.card.name === this.cards[0].name) {
                 capabilityEvent.emit('playersChoice', {
                     playerNumber: this.number,
                     capability: chosen.capability
@@ -58,11 +52,10 @@ export default class Player extends Component<{
                 <h3 className="text-sm text-gray-900 font-medium leading-8">Cards: { this.cards.length }</h3>
                 <PlayerCard
                     playerNumber={this.number}
-                    card={this.cards[this.currentCard]}
+                    card={this.cards[0]}
                     shouldTurnOver={!this.shouldAutoChoose}
                     isPlayersTurn={this.isTurn}
                 />
-                {this.hasWon && <h3 className="text-sm text-gray-900 font-medium leading-8">Has won</h3>}
             </div>
         )
     }

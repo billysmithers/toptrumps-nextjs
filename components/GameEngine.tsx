@@ -6,72 +6,42 @@ import {UnclaimedCards} from "./UnclaimedCards";
 import {capabilityEvent} from "./GameInteraction";
 import {Capability} from "../types/Capability";
 
-
 export default class GameContainer extends Component<{ cards: Card[] }> {
     private readonly cards = []
-    public state = {
-        players: [
+    public state = { // TODO - types for this model
+        players: [ // TODO - create this based on number of players
             {
                 isTurn: true,
                 cards: [],
-                currentCard: 0,
-                hasWon: false,
             },
             {
                 isTurn: false,
                 cards: [],
-                currentCard: 0,
-                hasWon: false,
             },
         ],
         unclaimedCards: [],
+        turnWinningPlayers: [],
+        capabilitiesInfo: [],
+        capabilityHasBeenSelected: false
     }
 
     constructor(props) {
         super(props)
         this.cards = this.shuffle(props.cards)
 
-        this.state.players[0].cards = this.cards.slice(0, 16)
+        this.state.players[0].cards = this.cards.slice(0, 16) // TODO - slice based on number of players
         this.state.players[1].cards = this.cards.slice(16)
     }
 
     componentDidMount() {
         capabilityEvent.on('playersChoice',  (chosen: {playerNumber: number, capability: Capability}) => {
-            console.log(chosen.playerNumber, chosen.capability)
-
-            const playerIndex = chosen.playerNumber - 1;
-            let opponentsCard
-            let opponentsIndex
-
-            if (playerIndex === 0) {
-                opponentsCard = this.state.players[1].cards[this.state.players[1].currentCard]
-                opponentsIndex = 1
-            } else {
-                opponentsCard = this.state.players[0].cards[this.state.players[0].currentCard]
-                opponentsIndex = 0
+            if (this.state.capabilityHasBeenSelected) {
+                return
             }
 
-            opponentsCard.capabilities.map((capability) => {
-                if (capability.capability === chosen.capability.capability) {
-                    console.log(capability.value)
-
-                    if (capability.value > chosen.capability.value) {
-                        const newPlayersState = this.state.players.slice()
-
-                        newPlayersState[opponentsIndex].hasWon = true
-
-                        this.setState({
-                            players: newPlayersState
-                        })
-
-                        console.log(this.state.players[1].hasWon)
-
-                        console.log('opponent has won')
-                    }
-
-                    return
-                }
-            })
+            const winningPlayers = this.whoWonTurn(chosen.playerNumber, chosen.capability)
+            this.updateStateAfterTurn(winningPlayers)
+            this.gameHasBeenWon()
         })
     }
 
@@ -93,6 +63,109 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
         return array;
     }
 
+    whoWonTurn(choosingPlayerNumber: number, chosenCapability: Capability): Array<number> {
+        const choosingPlayerIndex = choosingPlayerNumber - 1
+        let card
+        const capabilitiesInfo = []
+        const playerCapabilities = []
+        const winningPlayers = []
+
+        this.state.players.forEach((player, index) => {
+            card = player.cards[0]
+
+            card.capabilities.map((capability) => {
+                if (capability.capability === chosenCapability.capability) {
+                    playerCapabilities.push({ playerIndex: index, value: capability.value })
+
+                    if (index !== choosingPlayerIndex) {
+                        capabilitiesInfo.push(`${card.name} - ${capability.capability}: ${capability.value}`)
+                    }
+                }
+            })
+        })
+
+        playerCapabilities.sort(this.sortCapabilitiesByHighestValue)
+        winningPlayers.push(playerCapabilities[0].playerIndex);
+        const winningValue = playerCapabilities[0].value;
+        playerCapabilities.shift();
+        // handle a tie
+        playerCapabilities.forEach((playerCapability) => {
+            if (playerCapability.value === winningValue) {
+                winningPlayers.push(playerCapability.playerIndex)
+            }
+        })
+        this.setState({capabilitiesInfo})
+
+        return winningPlayers
+    }
+
+    sortCapabilitiesByHighestValue(a, b) {
+            if (a.value < b.value) {
+            return 1;
+        }
+
+        if (a.value > b.value) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    updateStateAfterTurn(winningPlayers: Array<number>) {
+        const cards = []
+        const winningPlayersForDisplay = []
+        const players = this.state.players.slice();
+        console.log(players)
+        let unclaimedCards = this.state.unclaimedCards.slice()
+
+        players.forEach((player, index) => {
+            if (winningPlayers.indexOf(index) === -1) {
+                cards.push(player.cards.shift())
+            }
+        })
+
+        console.log(cards)
+
+        if (winningPlayers.length > 1) {
+            unclaimedCards.concat(cards)
+        } else if (winningPlayers.length === 1) {
+            const winningPlayersIndex = winningPlayers[0];
+console.log(winningPlayersIndex);
+            players.map((player) => {
+                player.isTurn = false;
+            })
+
+            players[winningPlayersIndex].cards.concat(cards);
+            players[winningPlayersIndex].cards.concat(unclaimedCards);
+            players[winningPlayersIndex].isTurn = true;
+            console.log(players[winningPlayersIndex].cards);
+            unclaimedCards = []
+        }
+
+        winningPlayers.forEach((winningPlayerIndex) => {
+            winningPlayersForDisplay.push(winningPlayerIndex + 1)
+        })
+
+        console.log(players)
+
+        this.setState({
+            turnWinningPlayers: winningPlayersForDisplay,
+            players,
+            unclaimedCards,
+            capabilityHasBeenSelected: true
+        })
+    }
+
+    // @TODO - check if game has been won and display message
+    gameHasBeenWon(): boolean {
+        return false;
+    }
+
+    // @TODO - play next card on user click
+    nextCard() {
+
+    }
+
     render() {
         return (
             <div key="gameEngine">
@@ -105,20 +178,29 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
                         number={1}
                         name={'You'}
                         cards={this.state.players[0].cards}
-                        currentCard={this.state.players[0].currentCard}
                         shouldAutoChoose={false}
                         isTurn={this.state.players[0].isTurn}
-                        hasWon={this.state.players[0].hasWon}
                     />
                     <Player
                         number={2}
                         name={'Computer'}
                         cards={this.state.players[1].cards}
-                        currentCard={this.state.players[1].currentCard}
                         shouldAutoChoose={true}
                         isTurn={this.state.players[1].isTurn}
-                        hasWon={this.state.players[1].hasWon}
                     />
+                </div>
+                <div key="status">
+                    {
+                        this.state.turnWinningPlayers.length > 0 &&
+                        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+                            <h3 className="text-sm text-gray-900 font-medium leading-8">
+                                Player(s) {this.state.turnWinningPlayers.join(',')} won this card
+                            </h3>
+                            <h3 className="text-sm text-gray-900 font-medium leading-8">
+                            Other player(s) had {this.state.capabilitiesInfo.join(',')}
+                            </h3>
+                        </div>
+                    }
                 </div>
             </div>
         )
