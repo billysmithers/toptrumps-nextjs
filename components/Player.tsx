@@ -1,6 +1,5 @@
 import React, {Component, FC} from 'react';
 import {Card} from "../types/Card";
-import {CardBack} from "./CardBack";
 import {CardFront} from "./CardFront";
 import {capabilityEvent} from "./GameInteraction";
 import {Capability} from "../types/Capability";
@@ -8,7 +7,7 @@ import {Capability} from "../types/Capability";
 type PlayerCardProps = {
     playerNumber: number,
     card: Card,
-    shouldTurnOver: boolean,
+    shouldDisplayValues: boolean,
     isPlayersTurn: boolean,
 }
 
@@ -19,43 +18,72 @@ export default class Player extends Component<{
     shouldAutoChoose: boolean,
     isTurn: boolean,
 }> {
-    private readonly number
-    private readonly name
-    private readonly cards
-    private readonly shouldAutoChoose
-    private readonly isTurn
-
     constructor(props) {
         super(props)
-        this.number = props.number
-        this.name = props.name
-        this.cards = props.cards
-        this.shouldAutoChoose = props.shouldAutoChoose
-        this.isTurn = props.isTurn
     }
 
     componentDidMount() {
         capabilityEvent.on('capabilityChosen', (chosen: { card: Card, capability: Capability }) => {
-            if (chosen.card.name === this.cards[0].name) {
+            if (this.props.cards.length === 0) {
+                return
+            }
+
+            if (chosen.card.name === this.props.cards[0].name) {
                 capabilityEvent.emit('playersChoice', {
-                    playerNumber: this.number,
+                    playerNumber: this.props.number,
                     capability: chosen.capability
                 })
             }
         })
     }
 
+    componentDidUpdate() {
+        if (this.props.shouldAutoChoose && this.props.isTurn) {
+            this.autoChooseCapability()
+        }
+    }
+
+    autoChooseCapability() {
+        console.log('computers turn')
+        const card = this.props.cards[0]
+
+        //crudest algorithm to begin with - largest number wins
+        card.capabilities.sort(this.sortCapabilitiesByHighestValue)
+
+        capabilityEvent.emit('playersChoice', {
+            playerNumber: this.props.number,
+            capability: card.capabilities[0]
+        })
+    }
+
+    sortCapabilitiesByHighestValue(a, b) {
+        if (a.value < b.value) {
+            return 1;
+        }
+
+        if (a.value > b.value) {
+            return -1;
+        }
+
+        return 0;
+    }
+
     render() {
         return (
-            <div key={`player-${this.number}`}>
-                <h2 className="text-xl text-gray-900 font-medium leading-8">Player {this.number} ({this.name})</h2>
-                <h3 className="text-sm text-gray-900 font-medium leading-8">Cards: { this.cards.length }</h3>
-                <PlayerCard
-                    playerNumber={this.number}
-                    card={this.cards[0]}
-                    shouldTurnOver={!this.shouldAutoChoose}
-                    isPlayersTurn={this.isTurn}
-                />
+            <div key={`player-${this.props.number}`}>
+                <h2 className="text-xl text-gray-900 font-medium leading-8">
+                    Player {this.props.number} ({this.props.name})
+                </h2>
+                <h3 className="text-sm text-gray-900 font-medium leading-8">Cards: { this.props.cards.length }</h3>
+                {
+                    this.props.cards.length > 0 &&
+                    <PlayerCard
+                    playerNumber={this.props.number}
+                    card={this.props.cards[0]}
+                    shouldDisplayValues={!this.props.shouldAutoChoose}
+                    isPlayersTurn={this.props.isTurn}
+                    />
+                }
             </div>
         )
     }
@@ -64,12 +92,8 @@ export default class Player extends Component<{
 const PlayerCard: FC<PlayerCardProps> = ({
     playerNumber,
     card,
-    shouldTurnOver,
+    shouldDisplayValues,
     isPlayersTurn,
 }) => <div key={`player-card-${playerNumber}`}>
-    { shouldTurnOver ?
-        <CardFront card={card} isPlayersTurn={isPlayersTurn} />
-        :
-        <CardBack />
-    }
+    <CardFront card={card} isPlayersTurn={isPlayersTurn} shouldDisplayValues={shouldDisplayValues} />
 </div>

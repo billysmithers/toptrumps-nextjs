@@ -22,7 +22,7 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
         unclaimedCards: [],
         turnWinningPlayers: [],
         capabilitiesInfo: [],
-        capabilityHasBeenSelected: false
+        winner: null,
     }
 
     constructor(props) {
@@ -35,10 +35,6 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
 
     componentDidMount() {
         capabilityEvent.on('playersChoice',  (chosen: {playerNumber: number, capability: Capability}) => {
-            if (this.state.capabilityHasBeenSelected) {
-                return
-            }
-
             const winningPlayers = this.whoWonTurn(chosen.playerNumber, chosen.capability)
             this.updateStateAfterTurn(winningPlayers)
             this.gameHasBeenWon()
@@ -78,7 +74,7 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
                     playerCapabilities.push({ playerIndex: index, value: capability.value })
 
                     if (index !== choosingPlayerIndex) {
-                        capabilitiesInfo.push(`${card.name} - ${capability.capability}: ${capability.value}`)
+                        capabilitiesInfo.push(`${capability.capability}: ${capability.value}`)
                     }
                 }
             })
@@ -115,7 +111,6 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
         const cards = []
         const winningPlayersForDisplay = []
         const players = this.state.players.slice();
-        console.log(players)
         let unclaimedCards = this.state.unclaimedCards.slice()
 
         players.forEach((player, index) => {
@@ -124,21 +119,17 @@ export default class GameContainer extends Component<{ cards: Card[] }> {
             }
         })
 
-        console.log(cards)
-
         if (winningPlayers.length > 1) {
-            unclaimedCards.concat(cards)
+            unclaimedCards = unclaimedCards.concat(cards)
         } else if (winningPlayers.length === 1) {
             const winningPlayersIndex = winningPlayers[0];
-console.log(winningPlayersIndex);
             players.map((player) => {
                 player.isTurn = false;
             })
 
-            players[winningPlayersIndex].cards.concat(cards);
-            players[winningPlayersIndex].cards.concat(unclaimedCards);
+            players[winningPlayersIndex].cards = players[winningPlayersIndex].cards.concat(cards);
+            players[winningPlayersIndex].cards = players[winningPlayersIndex].cards.concat(unclaimedCards);
             players[winningPlayersIndex].isTurn = true;
-            console.log(players[winningPlayersIndex].cards);
             unclaimedCards = []
         }
 
@@ -146,24 +137,23 @@ console.log(winningPlayersIndex);
             winningPlayersForDisplay.push(winningPlayerIndex + 1)
         })
 
-        console.log(players)
-
         this.setState({
             turnWinningPlayers: winningPlayersForDisplay,
             players,
-            unclaimedCards,
-            capabilityHasBeenSelected: true
+            unclaimedCards
         })
     }
 
-    // @TODO - check if game has been won and display message
-    gameHasBeenWon(): boolean {
-        return false;
-    }
+    gameHasBeenWon(): void {
+        this.state.players.forEach((player, index) => {
+            if (player.cards.length === this.cards.length) {
+                this.setState({
+                    winner: index + 1
+                })
 
-    // @TODO - play next card on user click
-    nextCard() {
-
+                return
+            }
+        })
     }
 
     render() {
@@ -194,12 +184,19 @@ console.log(winningPlayersIndex);
                         this.state.turnWinningPlayers.length > 0 &&
                         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                             <h3 className="text-sm text-gray-900 font-medium leading-8">
-                                Player(s) {this.state.turnWinningPlayers.join(',')} won this card
+                                Player(s) {this.state.turnWinningPlayers.join(',')} won this turn
                             </h3>
                             <h3 className="text-sm text-gray-900 font-medium leading-8">
                             Other player(s) had {this.state.capabilitiesInfo.join(',')}
                             </h3>
                         </div>
+                    }
+
+                    {
+                        this.state.winner &&
+                        <h3 className="text-lg text-gray-900 font-bold leading-8">
+                            Player {this.state.winner} has won the game
+                        </h3>
                     }
                 </div>
             </div>

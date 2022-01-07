@@ -27,7 +27,7 @@ export default function Game({ gameName, cards, credits }) {
                 <a href="/" className="p-4 block">Games</a>
                 <h1 className="text-center text-3xl m-10">{gameName}</h1>
                 <GameEngine cards={cards}/>
-                <footer className="text-center">{credits}</footer>
+                <footer className="text-center mt-4">{credits}</footer>
             </div>
         </main>
     </div>
