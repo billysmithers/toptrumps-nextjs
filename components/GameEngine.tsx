@@ -11,7 +11,7 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
     public state = { // TODO - types for this model
         players: [ // TODO - create this based on number of players
             {
-                isTurn: false,
+                isTurn: true,
                 cards: [],
                 capabilityToUse: null,
             },
@@ -155,6 +155,8 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
             players,
             playerUpNext
         })
+
+        setTimeout(() => this.nextCard(), 3000);
     }
 
     nextCard(): void {
@@ -186,33 +188,6 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                     <CardDeck cards={this.cards}/>
                     <UnclaimedCards cards={[]}/>
                 </div>
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-                    <Player
-                        number={1}
-                        name={'You'}
-                        cards={this.state.players[0].cards}
-                        shouldAutoChoose={false}
-                        isTurn={this.state.players[0].isTurn}
-                        capabilityToUse={this.state.players[0].capabilityToUse}
-                    />
-                    <Player
-                        number={2}
-                        name={'Computer'}
-                        cards={this.state.players[1].cards}
-                        shouldAutoChoose={true}
-                        isTurn={this.state.players[1].isTurn}
-                        capabilityToUse={this.state.players[1].capabilityToUse}
-                    />
-                </div>
-                <div key="play-card" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 content-center mb-4">
-                    <button
-                        onClick={() => this.nextCard()}
-                        className="bg-blue-500 max-w-sm hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4"
-                    >
-                        Play this card
-                    </button>
-                    <div className="pt-2">It is player {this.state.playerUpNext + 1}'s turn</div>
-                </div>
                 <div key="status" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                     {
                         this.state.turnWinningPlayers.length > 0 &&
@@ -236,6 +211,27 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                             Player {this.state.winner} has won the game
                         </h3>
                     }
+                </div>
+                <div key="play-card" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 content-center mb-4">
+                    <div className="pt-2">It is player {this.state.playerUpNext + 1}'s turn</div>
+                </div>
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+                    <Player
+                        number={1}
+                        name={'You'}
+                        cards={this.state.players[0].cards}
+                        shouldAutoChoose={false}
+                        isTurn={this.state.players[0].isTurn}
+                        capabilityToUse={this.state.players[0].capabilityToUse}
+                    />
+                    <Player
+                        number={2}
+                        name={'Computer'}
+                        cards={this.state.players[1].cards}
+                        shouldAutoChoose={true}
+                        isTurn={this.state.players[1].isTurn}
+                        capabilityToUse={this.state.players[1].capabilityToUse}
+                    />
                 </div>
             </div>
         )
