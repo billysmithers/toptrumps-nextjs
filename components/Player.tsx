@@ -11,13 +11,14 @@ type PlayerCardProps = {
     isPlayersTurn: boolean,
 }
 
-export default class Player extends Component<{
+export default class Player extends Component< {
     number: number,
     name: string,
     cards: Card[],
     shouldAutoChoose: boolean,
     isTurn: boolean,
-}> {
+    capabilityToUse: string,
+}, any> {
     constructor(props) {
         super(props)
     }
@@ -38,22 +39,34 @@ export default class Player extends Component<{
     }
 
     componentDidUpdate() {
-        if (this.props.shouldAutoChoose && this.props.isTurn) {
+        if (
+            this.props.isTurn &&
+            (this.props.shouldAutoChoose || this.props.capabilityToUse)
+        ) {
             this.autoChooseCapability()
         }
     }
 
     autoChooseCapability() {
-        console.log('computers turn')
         const card = this.props.cards[0]
+        let capability = null
 
-        //crudest algorithm to begin with - largest number wins
-        card.capabilities.sort(this.sortCapabilitiesByHighestValue)
+        if (this.props.capabilityToUse) {
+            capability = card.capabilities.find((capability) => {
+                return capability.capability === this.props.capabilityToUse
+            })
+        } else if (this.props.shouldAutoChoose) {
+            //crudest algorithm to begin with - largest number wins
+            card.capabilities.sort(this.sortCapabilitiesByHighestValue)
+            capability = card.capabilities[0]
+        }
 
-        capabilityEvent.emit('playersChoice', {
-            playerNumber: this.props.number,
-            capability: card.capabilities[0]
-        })
+        if (capability) {
+            capabilityEvent.emit('playersChoice', {
+                playerNumber: this.props.number,
+                capability
+            })
+        }
     }
 
     sortCapabilitiesByHighestValue(a, b) {

@@ -17,9 +17,9 @@ export default function Game({ gameName, cards, credits }) {
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
             <meta
                 name="description"
-                content="Play the classic Top Trumps card game! This card set is based on {gameName}."
+                content={`Play the classic Top Trumps card game! This card set is based on ${gameName}.`}
             />
-            <title>Top Trumps - {gameName}</title>
+            <title>Top Trumps - { gameName }</title>
         </Head>
 
         <main className="bg-gray-100 font-mono text-black">

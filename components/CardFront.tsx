@@ -21,8 +21,13 @@ const capabilityChosen = (isPlayersTurn: boolean, card: Card, capability: Capabi
     })
 }
 
-export const CardFront: FC<CardProps> = ({ card, isPlayersTurn, shouldDisplayValues}) => <div className="max-w-xs m-4" key="cardFront">
-    <div className="bg-white shadow-xl rounded-lg py-3 col-span-1 border-2">
+const cardBackgroundColor = (isPlayersTurn: boolean): string => {
+    return isPlayersTurn ? 'white' : 'gray-300'
+}
+
+export const CardFront: FC<CardProps> = ({ card, isPlayersTurn, shouldDisplayValues}) =>
+<div className="max-w-xs m-4" key="cardFront">
+    <div className={`bg-${cardBackgroundColor(isPlayersTurn)} shadow-xl rounded-lg py-3 col-span-1 border-2`}>
         <h2 className="text-center text-xl text-gray-900 font-medium leading-8">
             {card.name}
         </h2>
