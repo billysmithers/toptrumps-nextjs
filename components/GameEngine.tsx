@@ -181,7 +181,7 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
 
     render() {
         return (
-            <div key="gameEngine">
+            <div key="gameEngine" className="px-10">
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                     <CardDeck cards={this.cards}/>
                     <UnclaimedCards cards={[]}/>
@@ -207,7 +207,7 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                 <div key="play-card" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 content-center mb-4">
                     <button
                         onClick={() => this.nextCard()}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4"
+                        className="bg-blue-500 max-w-sm hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4"
                     >
                         Play this card
                     </button>
