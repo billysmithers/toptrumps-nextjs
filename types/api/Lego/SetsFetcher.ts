@@ -4,7 +4,7 @@ import {logTypes} from "../logTypes";
 export class SetsFetcher implements Fetcher
 {
   baseUrl = 'https://rebrickable.com/api/v3/lego/'
-  numberOfResourcesToFetch = 32
+  numberOfResourcesToFetch = 30
 
   public async fetch(): Promise<SetData[]>
   {

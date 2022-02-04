@@ -4,7 +4,7 @@ import {logTypes} from "../logTypes";
 export abstract class ResourceFetcher implements Fetcher
 {
   baseUrl = 'https://swapi.dev/api/'
-  numberOfResourcesToFetch = 32
+  numberOfResourcesToFetch = 30
 
   abstract fetch(): Promise<Array<any>>;
 

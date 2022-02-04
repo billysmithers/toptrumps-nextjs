@@ -5,7 +5,7 @@ export class CharactersFetcher implements Fetcher
 {
   data = [];
   baseUrl = 'https://pokeapi.co/api/v2/pokemon/'
-  numberOfCharactersToFetch = 32
+  numberOfCharactersToFetch = 30
 
   public async fetch(): Promise<CharacterData[]>
   {

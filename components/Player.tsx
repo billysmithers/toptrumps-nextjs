@@ -21,9 +21,7 @@ export default class Player extends Component< {
 }, any> {
     constructor(props) {
         super(props)
-    }
 
-    componentDidMount() {
         capabilityEvent.on('capabilityChosen', (chosen: { card: Card, capability: Capability }) => {
             if (this.props.cards.length === 0) {
                 return
@@ -50,6 +48,10 @@ export default class Player extends Component< {
     autoChooseCapability() {
         const card = this.props.cards[0]
         let capability = null
+
+        if (! card) {
+            return
+        }
 
         if (this.props.capabilityToUse) {
             capability = card.capabilities.find((capability) => {
@@ -89,13 +91,13 @@ export default class Player extends Component< {
                 </h2>
                 <h3 className="text-sm text-gray-900 font-medium leading-8">Cards: { this.props.cards.length }</h3>
                 {
-                    this.props.cards.length > 0 &&
-                    <PlayerCard
+                    this.props.cards.length > 0 && this.props.cards[0] !== undefined &&
+                    (<PlayerCard
                     playerNumber={this.props.number}
                     card={this.props.cards[0]}
                     shouldDisplayValues={!this.props.shouldAutoChoose}
                     isPlayersTurn={this.props.isTurn}
-                    />
+                    />)
                 }
             </div>
         )

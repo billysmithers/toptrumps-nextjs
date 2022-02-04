@@ -14,15 +14,18 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                 isTurn: true,
                 cards: [],
                 capabilityToUse: null,
+                shouldAutoChoose: false,
             },
             {
                 isTurn: false,
                 cards: [],
                 capabilityToUse: null,
+                shouldAutoChoose: true,
             },
         ],
+        turn: 0,
         unclaimedCards: [],
-        turnWinningPlayers: [],
+        turnWinningPlayersDisplay: [],
         playerUpNext: 0,
         capabilitiesInfo: [],
         winner: null,
@@ -30,22 +33,25 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
 
     constructor(props) {
         super(props)
-        this.cards = this.shuffle(props.cards)
+        // this.cards = this.shuffle(props.cards)
+        this.cards = this.shuffle(props.cards).slice(0, 10)
 
-        this.state.players[0].cards = this.cards.slice(0, 16) // TODO - slice based on number of players
-        this.state.players[1].cards = this.cards.slice(16)
+        // this.state.players[0].cards = this.cards.slice(0, 15) // TODO - slice based on number of players
+        // this.state.players[1].cards = this.cards.slice(15)
+
+        this.state.players[0].cards = this.cards.slice(0, 5)
+        this.state.players[1].cards = this.cards.slice(5)
+
+        capabilityEvent.on(
+            'playersChoice',
+            (chosen: {playerNumber: number, capability: Capability}) => {
+                this.actionPlayerChoice(chosen);
+            }
+        )
     }
 
-    componentDidMount() {
-        capabilityEvent.on('playersChoice',  (chosen: {playerNumber: number, capability: Capability}) => {
-            const winningPlayers = this.whoWonTurn(chosen.playerNumber, chosen.capability)
-            this.updateStateAfterTurn(winningPlayers, chosen.capability)
-            this.gameHasBeenWon()
-        })
-    }
-
-    shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
+    shuffle(array): any[] {
+        let currentIndex = array.length, randomIndex;
 
         // While there remain elements to shuffle...
         while (currentIndex != 0) {
@@ -62,8 +68,18 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
         return array;
     }
 
-    whoWonTurn(choosingPlayerNumber: number, chosenCapability: Capability): Array<number> {
-        const choosingPlayerIndex = choosingPlayerNumber - 1
+    actionPlayerChoice(chosen: {playerNumber: number, capability: Capability}): void {
+        this.whoWonTurn(chosen.playerNumber, chosen.capability)
+            .then((winningPlayers) => this.updateStateAfterTurn(winningPlayers, chosen.capability))
+            .then(() => this.gameHasBeenWon())
+            .then(() => {
+                if (! this.state.winner) {
+                    this.nextCard()
+                }
+            })
+    }
+
+    async whoWonTurn(choosingPlayerNumber: number, chosenCapability: Capability): Promise<number[]> {
         let card
         let capability
         const capabilitiesInfo = []
@@ -72,16 +88,21 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
 
         this.state.players.forEach((player, index) => {
             card = player.cards[0]
-            capability = card.capabilities?.find(
+
+            capability = card.capabilities.find(
                 capability => capability.capability === chosenCapability.capability
             )
 
             if (capability) {
                 playerCapabilities.push({ playerIndex: index, value: capability.value })
 
-                capabilitiesInfo.push(`Player ${index + 1} had ${capability.capability}: ${capability.value}`)
+                capabilitiesInfo.push(
+                    `Player ${index + 1} had ${capability.capability}: ${capability.value} on card ${card.name}`
+                )
             } else { // handle a player not having this capability on their card
-                capabilitiesInfo.push(`Player ${index + 1} had ${capability.capability}: No value`)
+                capabilitiesInfo.push(
+                    `Player ${index + 1} had ${chosenCapability.capability}: No value on card ${card.name}`
+                )
                 winningPlayers.push(index)
             }
         })
@@ -89,6 +110,7 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
         playerCapabilities.sort(this.sortCapabilitiesByHighestValue)
         winningPlayers.push(playerCapabilities[0].playerIndex)
         const winningValue = playerCapabilities[0].value
+        // remove the winning capability
         playerCapabilities.shift();
         // handle a tie
         playerCapabilities.forEach((playerCapability) => {
@@ -96,12 +118,13 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                 winningPlayers.push(playerCapability.playerIndex)
             }
         })
-        this.setState({capabilitiesInfo})
+
+        this.setState({ capabilitiesInfo })
 
         return winningPlayers
     }
 
-    sortCapabilitiesByHighestValue(a, b) {
+    sortCapabilitiesByHighestValue(a, b): number {
             if (a.value < b.value) {
             return 1
         }
@@ -113,19 +136,22 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
         return 0
     }
 
-    updateStateAfterTurn(winningPlayers: Array<number>, chosenCapability: Capability) {
+    async updateStateAfterTurn(winningPlayers: number[], chosenCapability: Capability): Promise<void> {
         const cards = []
         const winningPlayersForDisplay = []
         const players = this.state.players.slice()
         let unclaimedCards = this.state.unclaimedCards.slice()
         let playerUpNext = this.state.playerUpNext
+        let turn = this.state.turn + 1
 
         players.forEach((player, index) => {
-            if (winningPlayers.indexOf(index) === -1) {
-                cards.push(player.cards.shift())
+            const playersCard = player.cards.shift()
+
+            if (winningPlayers.indexOf(index) === -1 || players.length === winningPlayers.length) {
+                cards.push(playersCard)
             } else {
                 // move the winning players current card to the back of their cards
-                player.cards.push(player.cards.shift())
+                player.cards.push(playersCard)
             }
         })
 
@@ -150,23 +176,29 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
         })
 
         this.setState({
-            turnWinningPlayers: winningPlayersForDisplay,
+            turnWinningPlayersDisplay: winningPlayersForDisplay.reverse(),
             unclaimedCards,
             players,
-            playerUpNext
+            playerUpNext,
+            turn
         })
-
-        setTimeout(() => this.nextCard(), 3000);
     }
 
     nextCard(): void {
         const players = this.state.players.slice()
+        const playerUpNext = players[this.state.playerUpNext];
 
-        players[this.state.playerUpNext].isTurn = true
+        playerUpNext.isTurn = true
 
-        this.setState({
-            players
-        })
+        if (playerUpNext.shouldAutoChoose || playerUpNext.capabilityToUse) {
+            setTimeout(() => this.setState({
+                players
+            }), 5000)
+        } else {
+            this.setState({
+                players
+            })
+        }
     }
 
     gameHasBeenWon(): void {
@@ -184,16 +216,23 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
     render() {
         return (
             <div key="gameEngine" className="px-10">
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+                <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3">
                     <CardDeck cards={this.cards}/>
-                    <UnclaimedCards cards={[]}/>
+                    <UnclaimedCards cards={this.state.unclaimedCards}/>
+                    <div className="max-w-xs m-4" key="turn">
+                        <div className="bg-white shadow-xl rounded-lg py-3">
+                            <h3 className="text-sm text-gray-900 font-medium leading-8 mx-5">
+                                Turn number: { this.state.turn }
+                            </h3>
+                        </div>
+                    </div>
                 </div>
-                <div key="status" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+                <div key="status" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mb-8">
                     {
-                        this.state.turnWinningPlayers.length > 0 &&
+                        this.state.turnWinningPlayersDisplay.length > 0 &&
                         <>
                             <h3 className="text-sm text-gray-900 font-medium leading-8">
-                                Player(s) {this.state.turnWinningPlayers.join(',')} won this turn
+                                Player(s) {this.state.turnWinningPlayersDisplay.join(',')} won this turn
                             </h3>
                             <ol className="text-sm text-gray-900 font-medium leading-8">
                                 {
@@ -212,15 +251,12 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                         </h3>
                     }
                 </div>
-                <div key="play-card" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 content-center mb-4">
-                    <div className="pt-2">It is player {this.state.playerUpNext + 1}'s turn</div>
-                </div>
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                     <Player
                         number={1}
                         name={'You'}
                         cards={this.state.players[0].cards}
-                        shouldAutoChoose={false}
+                        shouldAutoChoose={this.state.players[0].shouldAutoChoose}
                         isTurn={this.state.players[0].isTurn}
                         capabilityToUse={this.state.players[0].capabilityToUse}
                     />
@@ -228,7 +264,7 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                         number={2}
                         name={'Computer'}
                         cards={this.state.players[1].cards}
-                        shouldAutoChoose={true}
+                        shouldAutoChoose={this.state.players[1].shouldAutoChoose}
                         isTurn={this.state.players[1].isTurn}
                         capabilityToUse={this.state.players[1].capabilityToUse}
                     />
