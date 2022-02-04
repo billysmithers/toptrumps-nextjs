@@ -5,21 +5,21 @@
     "games": [
       {
         "key": "planets",
-        "name": "Star Wars Planets",
+        "name": "Planets",
         "fetcher": "StarWarsPlanetsFetcher",
         "transformer": "StarWarsPlanetResourceTransformer",
         "credits": "Data supplied by https://swapi.dev"
       },
       {
         "key": "starships",
-        "name": "Star Wars Starships",
+        "name": "Starships",
         "fetcher": "StarWarsStarshipsFetcher",
         "transformer": "StarWarsTransportResourceTransformer",
         "credits": "Data supplied by https://swapi.dev"
       },
       {
         "key": "vehicles",
-        "name": "Star Wars Vehicles",
+        "name": "Vehicles",
         "fetcher": "StarWarsVehiclesFetcher",
         "transformer": "StarWarsTransportResourceTransformer",
         "credits": "Data supplied by https://swapi.dev"
@@ -32,7 +32,7 @@
     "games": [
       {
         "key": "sets",
-        "name": "Lego sets",
+        "name": "Sets",
         "fetcher": "LegoSetsFetcher",
         "transformer": "LegoSetResourceTransformer",
         "credits": "Data supplied by https://rebrickable.com"
@@ -45,7 +45,7 @@
     "games": [
       {
         "key": "characters",
-        "name": "Pokemon characters",
+        "name": "Characters",
         "fetcher": "PokemonCharactersFetcher",
         "transformer": "PokemonCharacterResourceTransformer",
         "credits": "Data supplied by https://pokeapi.co"
