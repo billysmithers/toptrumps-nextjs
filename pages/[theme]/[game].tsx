@@ -17,7 +17,7 @@ export default function Game({ theme, gameName, cards, credits }) {
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
             <meta
                 name="description"
-                content={`Play the classic Top Trumps card game! This card set is based on ${gameName}.`}
+                content={`Play the classic Top Trumps card game! This card set is based on ${theme.name} ${gameName}.`}
             />
             <title>{`Top Trumps - ${theme.name} ${gameName}`}</title>
         </Head>

@@ -13,7 +13,7 @@ export default function Theme({ theme }) {
                     name="description"
                     content={`Play the classic Top Trumps card game! Choose a ${theme.name} game to play.`}
                 />
-                <title>Top Trumps</title>
+                <title>{`Top Trumps - ${theme.name}`}</title>
             </Head>
 
             <main className="bg-gray-100 text-black font-mono">
