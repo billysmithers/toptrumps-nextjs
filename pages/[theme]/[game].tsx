@@ -4,7 +4,6 @@ import {promises as fs} from "fs";
 import path from "path";
 import dynamic from 'next/dynamic'
 import Head from "next/head";
-import Link from "next/link";
 
 const GameEngine = dynamic(
     () => import("../../components/GameEngine"),
