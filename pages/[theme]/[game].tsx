@@ -25,9 +25,10 @@ export default function Game({ theme, gameName, cards, credits }) {
         <main className="bg-gray-100 font-mono text-black">
             <div className="container mx-auto md:px-24 lg:px-52">
                 <div className="p-4 block">
-                    <a href="/">Themes</a> / <a href={`/${encodeURIComponent(theme.key)}/`}>{theme.name}</a>
+                    <a href="/">Home</a> / <a href={`/${encodeURIComponent(theme.key)}/`}>{theme.name}</a>
                 </div>
-                <h1 className="text-center text-3xl m-10">{gameName}</h1>
+                <h1 className="text-center text-3xl m-10">Top Trumps</h1>
+                <h2 className="text-center text-3xl m-10">{theme.name} {gameName}</h2>
                 <GameEngine cards={cards}/>
                 <footer className="text-center mt-4">{credits}</footer>
             </div>

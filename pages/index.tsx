@@ -18,6 +18,7 @@ export default function Home({ games }) {
 
             <main className="bg-gray-100 text-black font-mono">
                 <div className="container mx-auto md:px-24 lg:px-52">
+                    <div className="p-4 block">Home</div>
                     <h1 className="text-center text-3xl m-10">Top Trumps</h1>
 
                     <h2 className="text-center text-2xl m-10">Please select a theme below</h2>

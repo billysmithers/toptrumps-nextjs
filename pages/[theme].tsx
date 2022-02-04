@@ -18,10 +18,10 @@ export default function Theme({ theme }) {
 
             <main className="bg-gray-100 text-black font-mono">
                 <div className="container mx-auto md:px-24 lg:px-52">
-                    <a href="/" className="p-4 block">Themes</a>
-                    <h1 className="text-center text-3xl m-10">{theme.name}</h1>
-
-                    <h2 className="text-center text-2xl m-10">{`Please select a ${theme.name} game to play`}</h2>
+                    <a href="/" className="p-4 block">Home</a>
+                    <h1 className="text-center text-3xl m-10">Top Trumps</h1>
+                    <h2 className="text-center text-3xl m-10">{theme.name}</h2>
+                    <h3 className="text-center text-2xl m-10">{`Please select a ${theme.name} game to play`}</h3>
 
                     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                         {theme.games.map((game) => (
