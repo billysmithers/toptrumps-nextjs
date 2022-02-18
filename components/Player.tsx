@@ -1,4 +1,5 @@
 import React, {Component, FC} from 'react';
+import Array from "../types/utils/Array";
 import {Card} from "../types/Card";
 import {CardFront} from "./CardFront";
 import {capabilityEvent} from "./GameInteraction";
@@ -59,28 +60,16 @@ export default class Player extends Component< {
             })
         } else if (this.props.shouldAutoChoose) {
             //crudest algorithm to begin with - largest number wins
-            card.capabilities.sort(this.sortCapabilitiesByHighestValue)
+            card.capabilities.sort(Array.sortByHighestValue)
             capability = card.capabilities[0]
         }
 
         if (capability) {
-            capabilityEvent.emit('playersChoice', {
+            setTimeout(() => capabilityEvent.emit('playersChoice', {
                 playerNumber: this.props.number,
                 capability
-            })
+            }), 5000)
         }
-    }
-
-    sortCapabilitiesByHighestValue(a, b) {
-        if (a.value < b.value) {
-            return 1;
-        }
-
-        if (a.value > b.value) {
-            return -1;
-        }
-
-        return 0;
     }
 
     render() {
