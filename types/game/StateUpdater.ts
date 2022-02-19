@@ -15,6 +15,8 @@ class StateUpdater {
     private cards: Card[] = []
     private capabilitiesInfo: string[] = []
     private players: PlayerState[] = []
+    private playerUpNext: number
+    private unclaimedCards: Card[] = []
 
     public updateAfterTurn(
         winningPlayers: number[],
@@ -26,11 +28,11 @@ class StateUpdater {
     ): TurnState {
         this.players = players
 
-        this.populateCards(winningPlayers)
-        this.populateCapabilitiesInfo(chosenCapability)
+        const playersCards = this.populateCards(winningPlayers)
+        this.populateCapabilitiesInfo(playersCards, chosenCapability)
         this.setPlayersState(winningPlayers, playerUpNext, chosenCapability, unclaimedCards)
-        playerUpNext = StateUpdater.setPlayerUpNext(winningPlayers, playerUpNext)
-        unclaimedCards = StateUpdater.setUnclaimedCards(winningPlayers, unclaimedCards)
+        this.setPlayerUpNext(winningPlayers, playerUpNext)
+        this.setUnclaimedCards(winningPlayers, unclaimedCards)
 
         const winningPlayersForDisplay: number[] = []
 
@@ -40,15 +42,17 @@ class StateUpdater {
 
         return {
             turnWinningPlayersDisplay: winningPlayersForDisplay,
-            unclaimedCards,
+            unclaimedCards: this.unclaimedCards,
             players: this.players,
-            playerUpNext,
+            playerUpNext: this.playerUpNext,
             turn,
             capabilitiesInfo: this.capabilitiesInfo
         }
     }
 
-    private populateCards(winningPlayers: number[]) {
+    private populateCards(winningPlayers: number[]): Card[] {
+        const playersCards: Card[] = [];
+
         this.players.forEach((player, index) => {
             const playersCard = player.cards.shift()
 
@@ -62,13 +66,15 @@ class StateUpdater {
                 // move the winning players current card to the back of their cards
                 this.players[index].cards.push(playersCard)
             }
+
+            playersCards[index] = playersCard
         })
+
+        return playersCards
     }
 
-    private populateCapabilitiesInfo(chosenCapability: Capability) {
-        this.players.forEach((player, index) => {
-            const playersCard = player.cards.shift()
-
+    private populateCapabilitiesInfo(playersCards: Card[], chosenCapability: Capability): void {
+        playersCards.forEach((playersCard, index) => {
             if (typeof playersCard === 'undefined') {
                 return
             }
@@ -94,14 +100,14 @@ class StateUpdater {
         playerUpNext: number,
         chosenCapability: Capability,
         unclaimedCards: Card[]
-    ) {
+    ): void {
         if (winningPlayers.length > 1) {
             this.players[playerUpNext].capabilityToUse = chosenCapability.capability;
         } else if (winningPlayers.length === 1) {
             const winningPlayersIndex = winningPlayers[0]
 
-            this.players.map((player) => {
-                player.isTurn = false;
+            this.players.forEach((player, index) => {
+                this.players[index].isTurn = false;
             })
 
             this.players[winningPlayersIndex].cards = this.players[winningPlayersIndex].cards.concat(this.cards)
@@ -110,26 +116,28 @@ class StateUpdater {
         }
     }
 
-    private static setPlayerUpNext(
+    private setPlayerUpNext(
         winningPlayers: number[],
         playerUpNext: number,
-    ): number {
+    ): void {
         if (winningPlayers.length === 1) {
             playerUpNext = winningPlayers[0]
         }
 
-        return playerUpNext
+        this.playerUpNext = playerUpNext
     }
 
-    private static setUnclaimedCards(
+    private setUnclaimedCards(
         winningPlayers: number[],
         unclaimedCards: Card[]
-    ): Card[] {
+    ): void {
         if (winningPlayers.length === 1) {
             unclaimedCards = []
+        } else {
+            unclaimedCards = unclaimedCards.concat(this.cards)
         }
 
-        return unclaimedCards
+        this.unclaimedCards = unclaimedCards
     }
 }
 

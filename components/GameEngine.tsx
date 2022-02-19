@@ -134,6 +134,7 @@ export default class GameContainer extends Component<{ cards: Card[] }, any> {
                 </div>
                 <div key="status" className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mb-8">
                     {
+                        ! this.state.winner &&
                         this.state.turnWinningPlayersDisplay.length > 0 &&
                         <>
                             <h3 className="text-sm text-gray-900 font-medium leading-8">
