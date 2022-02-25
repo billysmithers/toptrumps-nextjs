@@ -10,6 +10,7 @@ type PlayerCardProps = {
     card: Card,
     shouldDisplayValues: boolean,
     isPlayersTurn: boolean,
+    capabilityToUse: string|null,
 }
 
 export default class Player extends Component< {
@@ -18,7 +19,7 @@ export default class Player extends Component< {
     cards: Card[],
     shouldAutoChoose: boolean,
     isTurn: boolean,
-    capabilityToUse: string,
+    capabilityToUse: string|null,
 }, any> {
     constructor(props) {
         super(props)
@@ -39,8 +40,7 @@ export default class Player extends Component< {
 
     componentDidUpdate() {
         if (
-            this.props.isTurn &&
-            (this.props.shouldAutoChoose || this.props.capabilityToUse)
+            this.props.isTurn && this.props.shouldAutoChoose
         ) {
             this.autoChooseCapability()
         }
@@ -86,6 +86,7 @@ export default class Player extends Component< {
                     card={this.props.cards[0]}
                     shouldDisplayValues={!this.props.shouldAutoChoose}
                     isPlayersTurn={this.props.isTurn}
+                    capabilityToUse={this.props.capabilityToUse}
                     />)
                 }
             </div>
@@ -98,6 +99,12 @@ const PlayerCard: FC<PlayerCardProps> = ({
     card,
     shouldDisplayValues,
     isPlayersTurn,
+    capabilityToUse
 }) => <div key={`player-card-${playerNumber}`}>
-    <CardFront card={card} isPlayersTurn={isPlayersTurn} shouldDisplayValues={shouldDisplayValues} />
+    <CardFront
+        card={card}
+        isPlayersTurn={isPlayersTurn}
+        shouldDisplayValues={shouldDisplayValues}
+        capabilityToUse={capabilityToUse}
+    />
 </div>
